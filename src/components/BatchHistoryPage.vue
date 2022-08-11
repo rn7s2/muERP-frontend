@@ -1,27 +1,17 @@
 <template>
   <div>
     <div v-if="isItemsReady">
-      <div :style="{ margin: 'auto', width: '50%' }">
-        <a-form-item label="搜索">
-          <a-input v-model="searchText" placeholder="搜索（支持拼音首字母）……" />
-        </a-form-item>
-      </div>
       <a-table :style="{ margin: 'auto', width: '80%' }" :data="filteredItems" :columns="columns"
         :pagination="paginationProps">
         <template #operation="{ rowIndex }">
-          <a-space>
-            <a-button type="primary" @click="openItemDetailDialog(filteredItems[rowIndex])">详情 / 修改</a-button>
-            <a-button type="primary" @click="openBatchAddDialog(filteredItems[rowIndex])">批次入库</a-button>
-            <a-button type="primary" @click="openItemStockOutHistoryDialog(filteredItems[rowIndex])">出库历史</a-button>
-            <a-popconfirm @ok="removeItem(filteredItems[rowIndex])">
-              <template #content>
-                删除该条目将同时删除进出库批次记录，
-                <br />
-                确定删除该条目吗？
-              </template>
-              <a-button type="primary" status="danger">删除</a-button>
-            </a-popconfirm>
-          </a-space>
+          <a-popconfirm @ok="removeItem(filteredItems[rowIndex])">
+            <template #content>
+              删除该条目将同时删除进出库批次记录，
+              <br />
+              确定删除该条目吗？
+            </template>
+            <a-button type="primary" status="danger">废弃</a-button>
+          </a-popconfirm>
         </template>
       </a-table>
       <ItemDetailDialog :item="selectedItem" v-if="itemDetailDialogVisible" :visible="itemDetailDialogVisible" />
@@ -50,7 +40,7 @@ import BatchAddDialog from '../components/BatchAddDialog.vue'
 const ITEMS_PER_PAGE = 20
 
 export default defineComponent({
-  name: 'OverviewPage',
+  name: 'BatchHistoryPage',
   data () {
     return {
       searchText: '',
@@ -59,6 +49,10 @@ export default defineComponent({
         {
           title: '序号',
           dataIndex: 'id'
+        },
+        {
+          title: '日期',
+          dataIndex: 'date'
         },
         {
           title: '名称',
@@ -77,7 +71,7 @@ export default defineComponent({
           dataIndex: 'manufacturer'
         },
         {
-          title: '库存数量',
+          title: '数量',
           dataIndex: 'number'
         },
         {
@@ -85,14 +79,22 @@ export default defineComponent({
           dataIndex: 'price'
         },
         {
-          title: '最早一批保质期',
+          title: '批号',
+          dataIndex: 'sn'
+        },
+        {
+          title: '保质期',
           dataIndex: 'expirationTime'
+        },
+        {
+          title: '供货商',
+          dataIndex: 'vendor'
         },
         {
           title: '操作',
           slotName: 'operation',
           fixed: 'right',
-          width: 390
+          width: 100
         }
       ],
       filteredItems: [],
