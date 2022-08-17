@@ -41,6 +41,10 @@ async function disableBatch (batchId) {
   return await axios.patch(API_BASE + '/batches/' + batchId)
 }
 
+async function getStockInAndItems (from, to) {
+  return await axios.get(API_BASE + '/stock-in-and-items?from=' + from + '&to=' + to)
+}
+
 export default {
   getItems,
   modifyItem,
@@ -50,5 +54,6 @@ export default {
   removeItem,
   getBatchesAndItems,
   disableBatch,
-  getStockOutAndItems
+  getStockOutAndItems,
+  getStockInAndItems
 }

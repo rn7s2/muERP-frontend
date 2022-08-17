@@ -13,6 +13,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/BatchAddView.vue')
   },
   {
+    path: '/stock-in-history',
+    name: 'stock-in-history',
+    component: () => import('../views/StockInHistoryView.vue')
+  },
+  {
     path: '/stock-out-history',
     name: 'stock-out-history',
     component: () => import('../views/StockOutHistoryView.vue')

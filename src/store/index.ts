@@ -4,7 +4,8 @@ export default createStore({
   state: {
     items: null,
     batchesAndItems: null,
-    stockOutAndItems: null
+    stockOutAndItems: null,
+    stockInAndItems: null
   },
   getters: {
   },
@@ -17,6 +18,9 @@ export default createStore({
     },
     setStockOutAndItems (state, stockOutAndItems) {
       state.stockOutAndItems = stockOutAndItems
+    },
+    setStockInAndItems (state, stockInAndItems) {
+      state.stockInAndItems = stockInAndItems
     }
   },
   actions: {

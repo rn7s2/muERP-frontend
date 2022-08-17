@@ -9,6 +9,7 @@
       <a-space>
         <a-button :type="getButtonType('home')" @click="to('/')">库存概览</a-button>
         <a-button :type="getButtonType('batch-add')" @click="to('/batch-add')">批次入库</a-button>
+        <a-button :type="getButtonType('stock-in-history')" @click="to('/stock-in-history')">入库总表</a-button>
         <a-button :type="getButtonType('stock-out-history')" @click="to('/stock-out-history')">出库总表</a-button>
         <a-button :type="getButtonType('batch-history')" @click="to('/batch-history')">批次历史</a-button>
       </a-space>
