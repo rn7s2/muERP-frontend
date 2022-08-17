@@ -7,6 +7,10 @@ async function getItems () {
   return await axios.get(API_BASE + '/items')
 }
 
+async function createItem (item) {
+  return await axios.post(API_BASE + '/items', item)
+}
+
 async function modifyItem (item) {
   return await axios.put(API_BASE + '/items/' + item.id, item)
 }
@@ -47,6 +51,7 @@ async function getStockInAndItems (from, to) {
 
 export default {
   getItems,
+  createItem,
   modifyItem,
   getStockOutByItemId,
   addBatch,

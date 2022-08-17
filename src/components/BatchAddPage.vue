@@ -14,7 +14,7 @@
             </template>
             <template #default>批次入库模板.csv</template>
           </a-button>
-          <a-upload accept=".csv" :limit="1" action="/batches" :style="{ marginLeft: '50px' }" />
+          <a-upload accept=".csv" :limit="1" action="/api/batches" :style="{ marginLeft: '50px' }" />
         </a-space>
       </a-tab-pane>
       <a-tab-pane key="2" title="手动添加批次">
@@ -37,9 +37,10 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue'
 import BatchAddBox from './BatchAddBox.vue'
+import ApiClient from '@/plugins/api-client'
 
 export default defineComponent({
   name: 'BatchAddPage',
@@ -53,18 +54,77 @@ export default defineComponent({
         manufacturer: '',
         number: 0,
         price: 0.0,
-        sn: '',
-        expirationTime: '',
+        expiration: '',
         vendor: ''
       }
     }
   },
   methods: {
     downloadTemplate () {
-      window.open('批次入库模板.csv')
+      window.location = '批次入库模板.csv'
+    },
+    refreshData () {
+      ApiClient.getItems().then((res) => {
+        this.$store.commit('setItems', res.data)
+      }).catch(err => this.$message.error('拉取项目失败：' + err.message))
+      ApiClient.getBatchesAndItems().then(res => {
+        this.$store.commit('setBatchesAndItems', res.data)
+      }).catch(err => this.$message.error('拉取批次历史失败：' + err.message))
     },
     addBatch () {
-      console.log(this.newBatch)
+      if (this.newBatch.date === undefined || this.newBatch.date === null || this.newBatch.date === '') {
+        this.$message.warning('请输入入库日期！')
+        return
+      }
+      if (this.newBatch.expiration === undefined || this.newBatch.expiration === null || this.newBatch.expiration === '') {
+        this.$message.warning('请输入保质期！')
+        return
+      }
+      const itemId = this.$store.state.items.reduce((result, item) => {
+        if (item.name === this.newBatch.name && item.manufacturer === this.newBatch.manufacturer) {
+          return item.id
+        } else {
+          return result
+        }
+      }, null)
+      if (itemId !== null) {
+        ApiClient.addBatch({
+          id: 0,
+          date: this.newBatch.date,
+          number: this.newBatch.number,
+          expiration: this.newBatch.expiration,
+          vendor: this.newBatch.vendor,
+          disabled: 0,
+          item_id: itemId
+        }).then(res => {
+          this.$message.success('添加批次成功')
+          this.refreshData()
+        }).catch(err => this.$message.error('添加批次失败：' + err.message))
+      } else {
+        ApiClient.createItem({
+          id: 0,
+          name: this.newBatch.name,
+          specification: this.newBatch.specification,
+          unit: this.newBatch.unit,
+          manufacturer: this.newBatch.manufacturer,
+          number: 0,
+          price: this.newBatch.price,
+          expiration: this.newBatch.expiration
+        }).then(res => {
+          ApiClient.addBatch({
+            id: 0,
+            date: this.newBatch.date,
+            number: this.newBatch.number,
+            expiration: this.newBatch.expiration,
+            vendor: this.newBatch.vendor,
+            disabled: 0,
+            item_id: res.data
+          }).then(res => {
+            this.$message.success('添加批次成功')
+            this.refreshData()
+          }).catch(err => this.$message.error('添加批次失败：' + err.message))
+        }).catch(err => this.$message.error('新建条目失败：' + err.message))
+      }
     }
   },
   components: { BatchAddBox }
