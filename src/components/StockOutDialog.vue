@@ -5,7 +5,10 @@
     </template>
     <div>
       <a-form>
-        <a-form-item label="出库数量">
+        <a-form-item label="出库日期" required>
+          <a-date-picker v-model="date" />
+        </a-form-item>
+        <a-form-item label="出库数量" required>
           <a-input-number v-model="number" mode="button" :precision="0" :min="1" />
         </a-form-item>
       </a-form>
@@ -22,22 +25,27 @@ export default defineComponent({
   props: ['visible', 'item'],
   data () {
     return {
-      number: 1
+      number: 1,
+      date: (() => {
+        var today = new Date()
+        var dd = String(today.getDate()).padStart(2, '0')
+        var mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
+        var yyyy = today.getFullYear()
+
+        today = yyyy + '-' + mm + '-' + dd
+        return today
+      })()
     }
   },
   methods: {
     handleOk () {
+      if (this.date === null || this.date === undefined || this.date === '') {
+        this.$message.warning('请填写出库日期！')
+        return
+      }
       ApiClient.stockOut({
         id: 0,
-        date: (() => {
-          var today = new Date()
-          var dd = String(today.getDate()).padStart(2, '0')
-          var mm = String(today.getMonth() + 1).padStart(2, '0') // January is 0!
-          var yyyy = today.getFullYear()
-
-          today = yyyy + '-' + mm + '-' + dd
-          return today
-        })(),
+        date: this.date,
         number: this.number,
         item_id: this.item.id
       }).then((res) => {

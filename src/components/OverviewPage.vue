@@ -6,24 +6,35 @@
           <a-input v-model="searchText" placeholder="搜索（支持拼音首字母）……" />
         </a-form-item>
       </div>
-      <a-table :style="{ margin: 'auto', width: '95%' }" :data="filteredItems" :columns="columns"
-        :pagination="paginationProps">
-        <template #operation="{ rowIndex }">
-          <a-space>
-            <a-button type="outline" @click="openItemDetailDialog(filteredItems[rowIndex])">详情 / 修改</a-button>
-            <a-button type="primary" @click="openBatchAddDialog(filteredItems[rowIndex])">批次入库</a-button>
-            <a-button type="primary" status="warning" @click="openStockOutDialog(filteredItems[rowIndex])">出库
-            </a-button>
-            <a-button type="outline" @click="openItemStockOutHistoryDialog(filteredItems[rowIndex])">出库历史</a-button>
-            <a-popconfirm @ok="removeItem(filteredItems[rowIndex])">
-              <template #content>
-                删除该条目将同时删除进出库批次记录，
-                <br />
-                确定删除该条目吗？
-              </template>
-              <a-button type="primary" status="danger">删除</a-button>
-            </a-popconfirm>
-          </a-space>
+      <a-table :style="{ margin: 'auto', width: '95%' }" :data="filteredItems" :pagination="paginationProps">
+        <template #columns>
+          <a-table-column title="序号" data-index="id" />
+          <a-table-column title="名称" data-index="name" />
+          <a-table-column title="规格" data-index="specification" />
+          <a-table-column title="包装单位" data-index="unit" />
+          <a-table-column title="生产商" data-index="manufacturer" />
+          <a-table-column title="库存数量" data-index="number" />
+          <a-table-column title="单价" data-index="price" />
+          <a-table-column title="最早一批保质期" data-index="expiration" />
+          <a-table-column title="操作">
+            <template #cell="{ record }">
+              <a-space>
+                <a-button type="outline" @click="openItemDetailDialog(record)">详情 / 修改</a-button>
+                <a-button type="primary" @click="openBatchAddDialog(record)">批次入库</a-button>
+                <a-button type="primary" status="warning" @click="openStockOutDialog(record)">出库
+                </a-button>
+                <a-button type="outline" @click="openItemStockOutHistoryDialog(record)">出库历史</a-button>
+                <a-popconfirm @ok="removeItem(record)">
+                  <template #content>
+                    删除该条目将同时删除进出库批次记录，
+                    <br />
+                    确定删除该条目吗？
+                  </template>
+                  <a-button type="primary" status="danger">删除</a-button>
+                </a-popconfirm>
+              </a-space>
+            </template>
+          </a-table-column>
         </template>
       </a-table>
       <ItemDetailDialog :item="selectedItem" v-if="itemDetailDialogVisible" :visible="itemDetailDialogVisible" />

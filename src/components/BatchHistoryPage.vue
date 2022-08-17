@@ -1,20 +1,33 @@
 <template>
   <div>
     <div v-if="isBatchesAndItemsReady">
-      <a-table :style="{ margin: 'auto', width: '95%' }" :data="batchesAndItems" :columns="columns"
-        :pagination="paginationProps">
-        <template #operation="{ rowIndex }">
-          <div v-if="batchesAndItems[rowIndex].disabled">
-            <span :style="{ color: 'red' }">批次已废弃</span>
-          </div>
-          <a-popconfirm v-else @ok="disableBatch(batchesAndItems[rowIndex])">
-            <template #content>
-              废弃该批次将不再追踪该批次的保质期，
-              <br />
-              确定进行操作吗？
+      <a-table :style="{ margin: 'auto', width: '95%' }" :data="batchesAndItems" :pagination="paginationProps">
+        <template #columns>
+          <a-table-column title="序号" data-index="id" />
+          <a-table-column title="日期" data-index="date" />
+          <a-table-column title="名称" data-index="name" />
+          <a-table-column title="规格" data-index="specification" />
+          <a-table-column title="包装单位" data-index="unit" />
+          <a-table-column title="生产商" data-index="manufacturer" />
+          <a-table-column title="数量" data-index="number" />
+          <a-table-column title="单价" data-index="price" />
+          <a-table-column title="保质期" data-index="expiration" />
+          <a-table-column title="供货商" data-index="vendor" />
+          <a-table-column title="操作">
+            <template #cell="{ record }">
+              <div v-if="record.disabled === 1">
+                <span :style="{ color: 'red' }">批次已废弃</span>
+              </div>
+              <a-popconfirm v-else @ok="disableBatch(record.id)">
+                <template #content>
+                  废弃该批次将不再追踪该批次的保质期，
+                  <br />
+                  确定进行操作吗？
+                </template>
+                <a-button type="primary" status="danger">废弃</a-button>
+              </a-popconfirm>
             </template>
-            <a-button type="primary" status="danger">废弃</a-button>
-          </a-popconfirm>
+          </a-table-column>
         </template>
       </a-table>
     </div>
@@ -41,54 +54,6 @@ export default defineComponent({
   data () {
     return {
       paginationProps: false,
-      columns: [
-        {
-          title: '序号',
-          dataIndex: 'id'
-        },
-        {
-          title: '日期',
-          dataIndex: 'date'
-        },
-        {
-          title: '名称',
-          dataIndex: 'name'
-        },
-        {
-          title: '规格',
-          dataIndex: 'specification'
-        },
-        {
-          title: '包装单位',
-          dataIndex: 'unit'
-        },
-        {
-          title: '生产商',
-          dataIndex: 'manufacturer'
-        },
-        {
-          title: '数量',
-          dataIndex: 'number'
-        },
-        {
-          title: '单价',
-          dataIndex: 'price'
-        },
-        {
-          title: '保质期',
-          dataIndex: 'expiration'
-        },
-        {
-          title: '供货商',
-          dataIndex: 'vendor'
-        },
-        {
-          title: '操作',
-          slotName: 'operation',
-          fixed: 'right',
-          width: 120
-        }
-      ],
       batchesAndItems: []
     }
   },
@@ -114,8 +79,8 @@ export default defineComponent({
         this.renderData()
       }).catch(err => this.$message.error('拉取批次历史失败：' + err.message))
     },
-    disableBatch (batch) {
-      ApiClient.disableBatch(batch.id).then(res => {
+    disableBatch (batchId) {
+      ApiClient.disableBatch(batchId).then(res => {
         this.$message.success('废弃批次成功')
         this.refreshData()
       }).catch(err => this.$message.error('废弃批次失败：' + err.message))
