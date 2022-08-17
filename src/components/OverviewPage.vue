@@ -15,7 +15,11 @@
           <a-table-column title="生产商" data-index="manufacturer" />
           <a-table-column title="库存数量" data-index="number" />
           <a-table-column title="单价" data-index="price" />
-          <a-table-column title="最早一批保质期" data-index="expiration" />
+          <a-table-column title="最早一批保质期">
+            <template #cell="{ record }">
+              <span :style="getColorStyle(record)">{{ record.expiration }}</span>
+            </template>
+          </a-table-column>
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space>
@@ -151,6 +155,19 @@ export default defineComponent({
         this.$message.success('删除项目成功')
         this.refreshData()
       }).catch(err => this.$message.error('删除项目失败：' + err.message))
+    },
+    getColorStyle (item) {
+      if (item.expiration === '2099-12-31') {
+        return { color: 'white' }
+      }
+      const expiration = new Date(item.expiration)
+      const today = new Date()
+      const days = Math.abs((expiration - today) / (1000 * 3600 * 24))
+      if (days <= 90) {
+        return { color: 'white', backgroundColor: 'red' }
+      } else {
+        return {}
+      }
     },
     openItemDetailDialog (item) {
       this.selectedItem = item
