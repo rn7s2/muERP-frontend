@@ -6,11 +6,12 @@
       </a-button>
     </template>
     <template #extra>
-      <a-button-group>
+      <a-space>
         <a-button :type="getButtonType('home')" @click="to('/')">库存概览</a-button>
         <a-button :type="getButtonType('batch-add')" @click="to('/batch-add')">批次入库</a-button>
+        <a-button :type="getButtonType('stock-out-history')" @click="to('/stock-out-history')">出库总表</a-button>
         <a-button :type="getButtonType('batch-history')" @click="to('/batch-history')">批次历史</a-button>
-      </a-button-group>
+      </a-space>
     </template>
   </a-page-header>
 </template>

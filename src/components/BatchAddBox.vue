@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-form :model="newBatch" v-if="isInDialog">
-      <a-form-item field="date" label="入库日期">
+      <a-form-item field="date" label="入库日期" required>
         <a-date-picker v-model="newBatch.date" />
       </a-form-item>
       <a-form-item field="name" label="名称">
@@ -16,14 +16,17 @@
       <a-form-item field="manufacturer" label="生产商">
         <a-input v-model="newBatch.manufacturer" disabled />
       </a-form-item>
-      <a-form-item field="number" label="数量">
+      <a-form-item field="number" label="数量" required>
         <a-input-number v-model="newBatch.number" mode="button" :precision="0" />
       </a-form-item>
       <a-form-item field="price" label="单价">
         <a-input-number v-model="newBatch.price" :precision="2" disabled />
       </a-form-item>
-      <a-form-item field="expiration" label="保质期至">
+      <a-form-item field="expiration" label="保质期至" required>
         <a-date-picker v-model="newBatch.expiration" />
+      </a-form-item>
+      <a-form-item field="vendor" label="供货商" required>
+        <a-input v-model="newBatch.vendor" />
       </a-form-item>
     </a-form>
     <a-form :model="newBatch" v-else>
@@ -50,6 +53,9 @@
       </a-form-item>
       <a-form-item field="expiration" label="保质期至">
         <a-date-picker v-model="newBatch.expiration" />
+      </a-form-item>
+      <a-form-item field="vendor" label="供货商">
+        <a-input v-model="newBatch.vendor" />
       </a-form-item>
     </a-form>
   </div>

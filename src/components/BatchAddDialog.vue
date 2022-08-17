@@ -40,7 +40,11 @@ export default defineComponent({
   },
   methods: {
     handleOk () {
-      if (this.newBatch.expiration === '') {
+      if (this.newBatch.date === undefined || this.newBatch.date === null || this.newBatch.date === '') {
+        this.$message.warning('请输入入库日期！')
+        return
+      }
+      if (this.newBatch.expiration === undefined || this.newBatch.expiration === null || this.newBatch.expiration === '') {
         this.$message.warning('请输入保质期！')
         return
       }

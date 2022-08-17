@@ -6,13 +6,13 @@
     <div>
       <a-form>
         <a-form-item label="选择时间范围">
-          <a-range-picker mode="date" />
+          <a-range-picker mode="date" v-model="timeRange" />
         </a-form-item>
         <a-form-item label="范围内出库总数">
           <a-input-number v-model="rangeNumber" read-only />
         </a-form-item>
       </a-form>
-      <a-table :data="stockOutHistory" :columns="columns" :pagination="paginationProps"></a-table>
+      <a-table :data="filteredStockOutHistory" :columns="columns" :pagination="paginationProps"></a-table>
     </div>
   </a-modal>
 </template>
@@ -21,14 +21,18 @@
 import { defineComponent } from 'vue'
 import ApiClient from '@/plugins/api-client'
 
+const ITEMS_PER_PAGE = 20
+
 export default defineComponent({
   name: 'ItemStockOutHistoryDialog',
   props: ['visible', 'item'],
   data () {
     return {
-      stockOutHistory: [],
+      timeRange: undefined,
       rangeNumber: 0,
+      filteredStockOutHistory: [],
       paginationProps: false,
+      stockOutHistory: [],
       columns: [
         {
           title: '时间',
@@ -41,7 +45,34 @@ export default defineComponent({
       ]
     }
   },
+  watch: {
+    timeRange () {
+      this.filterStockOutHistory()
+    }
+  },
   methods: {
+    filterStockOutHistory () {
+      if (this.timeRange && this.timeRange[0] && this.timeRange[1]) {
+        this.filteredStockOutHistory = this.stockOutHistory.filter(element => {
+          return Date.parse(element.date) >= Date.parse(this.timeRange[0]) && Date.parse(element.date) <= Date.parse(this.timeRange[1])
+        })
+      } else {
+        this.filteredStockOutHistory = this.stockOutHistory
+      }
+      this.rangeNumber = 0
+      this.filteredStockOutHistory.forEach(element => {
+        this.rangeNumber += element.number
+      })
+      if (this.filteredStockOutHistory.length <= ITEMS_PER_PAGE) {
+        this.paginationProps = false
+      } else {
+        this.paginationProps = {
+          total: this.filteredStockOutHistory.length,
+          defaultCurrent: 1,
+          pageSize: ITEMS_PER_PAGE
+        }
+      }
+    },
     handleOk () {
       this.$parent.closeItemStockOutHistoryDialog()
     },
@@ -52,10 +83,7 @@ export default defineComponent({
   mounted () {
     ApiClient.getStockOutByItemId(this.item.id).then(res => {
       this.stockOutHistory = res.data
-      this.rangeNumber = 0
-      res.data.forEach(element => {
-        this.rangeNumber += element.number
-      })
+      this.filterStockOutHistory()
     }).catch(err => this.$message.error('拉取出库记录失败：' + err.message))
   }
 })

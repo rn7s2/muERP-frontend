@@ -16,6 +16,10 @@ async function removeItem (item) {
 }
 
 // StockOut
+async function getStockOutAndItems (from, to) {
+  return await axios.get(API_BASE + '/stock-out-and-items?from=' + from + '&to=' + to)
+}
+
 async function getStockOutByItemId (id) {
   return await axios.get(API_BASE + '/stock-out/' + id)
 }
@@ -45,5 +49,6 @@ export default {
   stockOut,
   removeItem,
   getBatchesAndItems,
-  disableBatch
+  disableBatch,
+  getStockOutAndItems
 }

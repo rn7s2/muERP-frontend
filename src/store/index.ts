@@ -3,7 +3,8 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     items: null,
-    batchesAndItems: null
+    batchesAndItems: null,
+    stockOutAndItems: null
   },
   getters: {
   },
@@ -13,6 +14,9 @@ export default createStore({
     },
     setBatchesAndItems (state, batchesAndItems) {
       state.batchesAndItems = batchesAndItems
+    },
+    setStockOutAndItems (state, stockOutAndItems) {
+      state.stockOutAndItems = stockOutAndItems
     }
   },
   actions: {

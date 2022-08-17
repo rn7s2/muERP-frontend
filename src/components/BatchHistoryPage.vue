@@ -13,7 +13,7 @@
               <br />
               确定进行操作吗？
             </template>
-            <a-button type="primary" status="danger">删除</a-button>
+            <a-button type="primary" status="danger">废弃</a-button>
           </a-popconfirm>
         </template>
       </a-table>
