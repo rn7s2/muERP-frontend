@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="isBatchesAndItemsReady">
-      <a-table :style="{ margin: 'auto', width: '80%' }" :data="batchesAndItems" :columns="columns"
+      <a-table :style="{ margin: 'auto', width: '95%' }" :data="batchesAndItems" :columns="columns"
         :pagination="paginationProps">
         <template #operation="{ rowIndex }">
           <div v-if="batchesAndItems[rowIndex].disabled">

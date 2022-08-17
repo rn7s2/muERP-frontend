@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :style="{ margin: 'auto', width: '80%' }" v-if="isStockOutAndItemsReady">
+    <div :style="{ margin: 'auto', width: '95%' }" v-if="isStockOutAndItemsReady">
       <a-form-item label="选择时间范围">
         <a-range-picker mode="date" v-model="timeRange" />
       </a-form-item>

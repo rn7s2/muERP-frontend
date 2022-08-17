@@ -6,7 +6,7 @@
           <a-input v-model="searchText" placeholder="搜索（支持拼音首字母）……" />
         </a-form-item>
       </div>
-      <a-table :style="{ margin: 'auto', width: '80%' }" :data="filteredItems" :columns="columns"
+      <a-table :style="{ margin: 'auto', width: '95%' }" :data="filteredItems" :columns="columns"
         :pagination="paginationProps">
         <template #operation="{ rowIndex }">
           <a-space>
