@@ -12,13 +12,14 @@
           <a-input-number v-model="rangeNumber" read-only />
         </a-form-item>
       </a-form>
-      <a-table :columns="columns" :pagination="paginationProps"></a-table>
+      <a-table :data="stockOutHistory" :columns="columns" :pagination="paginationProps"></a-table>
     </div>
   </a-modal>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
+import ApiClient from '@/plugins/api-client'
 
 export default defineComponent({
   name: 'ItemStockOutHistoryDialog',
@@ -31,7 +32,7 @@ export default defineComponent({
       columns: [
         {
           title: '时间',
-          dataIndex: 'datetime'
+          dataIndex: 'date'
         },
         {
           title: '出库数量',
@@ -45,11 +46,17 @@ export default defineComponent({
       this.$parent.closeItemStockOutHistoryDialog()
     },
     handleCancel () {
-      this.handleOk()
+      this.$parent.closeItemStockOutHistoryDialog()
     }
   },
   mounted () {
-    // Load history here.
+    ApiClient.getStockOutByItemId(this.item.id).then(res => {
+      this.stockOutHistory = res.data
+      this.rangeNumber = 0
+      res.data.forEach(element => {
+        this.rangeNumber += element.number
+      })
+    }).catch(err => this.$message.error('拉取出库记录失败：' + err.message))
   }
 })
 </script>

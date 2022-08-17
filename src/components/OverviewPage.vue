@@ -10,9 +10,11 @@
         :pagination="paginationProps">
         <template #operation="{ rowIndex }">
           <a-space>
-            <a-button type="primary" @click="openItemDetailDialog(filteredItems[rowIndex])">详情 / 修改</a-button>
+            <a-button type="outline" @click="openItemDetailDialog(filteredItems[rowIndex])">详情 / 修改</a-button>
             <a-button type="primary" @click="openBatchAddDialog(filteredItems[rowIndex])">批次入库</a-button>
-            <a-button type="primary" @click="openItemStockOutHistoryDialog(filteredItems[rowIndex])">出库历史</a-button>
+            <a-button type="primary" status="warning" @click="openStockOutDialog(filteredItems[rowIndex])">出库
+            </a-button>
+            <a-button type="outline" @click="openItemStockOutHistoryDialog(filteredItems[rowIndex])">出库历史</a-button>
             <a-popconfirm @ok="removeItem(filteredItems[rowIndex])">
               <template #content>
                 删除该条目将同时删除进出库批次记录，
@@ -28,8 +30,9 @@
       <ItemStockOutHistoryDialog :item="selectedItem" v-if="itemStockOutHistoryDialogVisible"
         :visible="itemStockOutHistoryDialogVisible" />
       <BatchAddDialog :item="selectedItem" v-if="batchAddDialogVisible" :visible="batchAddDialogVisible" />
+      <StockOutDialog :item="selectedItem" v-if="stockOutDialogVisible" :visible="stockOutDialogVisible" />
     </div>
-    <center v-else>
+    <div style="text-align:center;" v-else>
       <br />
       <br />
       <br />
@@ -37,7 +40,7 @@
       <br />
       <br />
       <a-spin dot />
-    </center>
+    </div>
   </div>
 </template>
 
@@ -46,6 +49,8 @@ import { defineComponent } from 'vue'
 import ItemDetailDialog from '../components/ItemDetailDialog.vue'
 import ItemStockOutHistoryDialog from '../components/ItemStockOutHistoryDialog.vue'
 import BatchAddDialog from '../components/BatchAddDialog.vue'
+import StockOutDialog from '@/components/StockOutDialog.vue'
+import ApiClient from '@/plugins/api-client'
 
 const ITEMS_PER_PAGE = 20
 
@@ -86,7 +91,7 @@ export default defineComponent({
         },
         {
           title: '最早一批保质期',
-          dataIndex: 'expirationTime'
+          dataIndex: 'expiration'
         },
         {
           title: '操作',
@@ -99,12 +104,13 @@ export default defineComponent({
       selectedItem: null,
       itemDetailDialogVisible: false,
       itemStockOutHistoryDialogVisible: false,
-      batchAddDialogVisible: false
+      batchAddDialogVisible: false,
+      stockOutDialogVisible: false
     }
   },
   methods: {
     filterItems () {
-      this.filteredItems = this.$store.getters.getItems.filter((item) => {
+      this.filteredItems = this.$store.state.items.filter((item) => {
         const name = item.name.toUpperCase()
         const manufacturer = item.manufacturer.toUpperCase()
         const tmp = this.searchText.toUpperCase()
@@ -120,8 +126,20 @@ export default defineComponent({
         }
       }
     },
+    refreshData () {
+      ApiClient.getItems().then((res) => {
+        this.$store.commit('setItems', res.data)
+        this.filterItems()
+      }).catch(err => this.$message.error('拉取项目失败：' + err.message))
+      ApiClient.getBatchesAndItems().then(res => {
+        this.$store.commit('setBatchesAndItems', res.data)
+      }).catch(err => this.$message.error('拉取批次历史失败：' + err.message))
+    },
     removeItem (item) {
-      console.log(item)
+      ApiClient.removeItem(item).then(res => {
+        this.$message.success('删除项目成功')
+        this.refreshData()
+      }).catch(err => this.$message.error('删除项目失败：' + err.message))
     },
     openItemDetailDialog (item) {
       this.selectedItem = item
@@ -146,6 +164,14 @@ export default defineComponent({
     closeBatchAddDialog () {
       this.batchAddDialogVisible = false
       this.selectedItem = null
+    },
+    openStockOutDialog (item) {
+      this.selectedItem = item
+      this.stockOutDialogVisible = true
+    },
+    closeStockOutDialog () {
+      this.stockOutDialogVisible = false
+      this.selectedItem = null
     }
   },
   watch: {
@@ -169,7 +195,8 @@ export default defineComponent({
   components: {
     ItemDetailDialog,
     ItemStockOutHistoryDialog,
-    BatchAddDialog
+    BatchAddDialog,
+    StockOutDialog
   }
 })
 </script>

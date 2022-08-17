@@ -22,8 +22,8 @@
       <a-form-item field="price" label="单价">
         <a-input-number v-model="newBatch.price" :precision="2" disabled />
       </a-form-item>
-      <a-form-item field="expirationTime" label="保质期至">
-        <a-date-picker v-model="newBatch.expirationTime" />
+      <a-form-item field="expiration" label="保质期至">
+        <a-date-picker v-model="newBatch.expiration" />
       </a-form-item>
     </a-form>
     <a-form :model="newBatch" v-else>
@@ -48,8 +48,8 @@
       <a-form-item field="price" label="单价">
         <a-input-number v-model="newBatch.price" :precision="2" />
       </a-form-item>
-      <a-form-item field="expirationTime" label="保质期至">
-        <a-date-picker v-model="newBatch.expirationTime" />
+      <a-form-item field="expiration" label="保质期至">
+        <a-date-picker v-model="newBatch.expiration" />
       </a-form-item>
     </a-form>
   </div>

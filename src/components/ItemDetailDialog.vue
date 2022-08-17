@@ -26,8 +26,8 @@
         <a-form-item field="price" label="单价">
           <a-input-number v-model="currentItem.price" :precision="2" />
         </a-form-item>
-        <a-form-item field="expirationTime" label="最后一批保质期">
-          <a-input v-model="currentItem.expirationTime" disabled />
+        <a-form-item field="expiration" label="最后一批保质期">
+          <a-input v-model="currentItem.expiration" disabled />
         </a-form-item>
       </a-form>
     </div>
@@ -36,6 +36,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import ApiClient from '@/plugins/api-client'
 
 export default defineComponent({
   name: 'ItemDetailDialog',
@@ -48,7 +49,11 @@ export default defineComponent({
   methods: {
     handleOk () {
       // modify item
-      this.$parent.closeItemDetailDialog()
+      ApiClient.modifyItem(this.currentItem).then((res) => {
+        this.$message.success('修改成功')
+        this.$parent.closeItemDetailDialog()
+        this.$parent.refreshData()
+      }).catch(err => this.$message.error('修改错误：' + err.message))
     },
     handleCancel () {
       this.$parent.closeItemDetailDialog()

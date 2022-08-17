@@ -23,6 +23,9 @@ export default defineComponent({
     ApiClient.getItems().then((res) => {
       this.$store.commit('setItems', res.data)
     }).catch(err => this.$message.error('拉取项目失败：' + err.message))
+    ApiClient.getBatchesAndItems().then(res => {
+      this.$store.commit('setBatchesAndItems', res.data)
+    }).catch(err => this.$message.error('拉取批次历史失败：' + err.message))
   }
 })
 </script>
