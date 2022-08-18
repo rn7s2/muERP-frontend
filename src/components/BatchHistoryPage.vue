@@ -1,6 +1,11 @@
 <template>
   <div>
     <div v-if="isBatchesAndItemsReady">
+      <div :style="{ margin: 'auto', width: '50%' }">
+        <a-form-item label="搜索">
+          <a-input v-model="searchText" placeholder="搜索（支持拼音首字母）……" />
+        </a-form-item>
+      </div>
       <a-table :style="{ margin: 'auto', width: '95%' }" :data="batchesAndItems" :pagination="paginationProps">
         <template #columns>
           <a-table-column title="序号" data-index="id" />
@@ -50,6 +55,7 @@
 <script>
 import { defineComponent } from 'vue'
 import ApiClient from '@/plugins/api-client'
+import pinyin from 'pinyin'
 
 const ITEMS_PER_PAGE = 20
 
@@ -57,13 +63,24 @@ export default defineComponent({
   name: 'BatchHistoryPage',
   data () {
     return {
+      searchText: '',
       paginationProps: false,
       batchesAndItems: []
     }
   },
   methods: {
     renderData () {
-      this.batchesAndItems = this.$store.state.batchesAndItems
+      this.batchesAndItems = this.$store.state.batchesAndItems.filter((item) => {
+        const name = item.name.toLowerCase()
+        const manufacturer = item.manufacturer.toLowerCase()
+        const tmp = this.searchText.toLowerCase()
+
+        function contains (str, p) {
+          return pinyin(str, { style: 'first_letter' }).reduce((result, item) => result + item[0], '').includes(p)
+        }
+
+        return contains(name, tmp) || contains(manufacturer, tmp) || name.includes(tmp) || manufacturer.includes(tmp)
+      })
       if (this.batchesAndItems.length <= ITEMS_PER_PAGE) {
         this.paginationProps = false
       } else {
@@ -104,6 +121,9 @@ export default defineComponent({
     }
   },
   watch: {
+    searchText () {
+      this.renderData()
+    },
     isBatchesAndItemsReady () {
       this.renderData()
     }
