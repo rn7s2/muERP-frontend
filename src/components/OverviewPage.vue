@@ -66,6 +66,7 @@ import ItemStockOutHistoryDialog from '../components/ItemStockOutHistoryDialog.v
 import BatchAddDialog from '../components/BatchAddDialog.vue'
 import StockOutDialog from '@/components/StockOutDialog.vue'
 import ApiClient from '@/plugins/api-client'
+import pinyin from 'pinyin'
 
 const ITEMS_PER_PAGE = 20
 
@@ -126,10 +127,15 @@ export default defineComponent({
   methods: {
     filterItems () {
       this.filteredItems = this.$store.state.items.filter((item) => {
-        const name = item.name.toUpperCase()
-        const manufacturer = item.manufacturer.toUpperCase()
-        const tmp = this.searchText.toUpperCase()
-        return name.includes(tmp) || manufacturer.includes(tmp)
+        const name = item.name.toLowerCase()
+        const manufacturer = item.manufacturer.toLowerCase()
+        const tmp = this.searchText.toLowerCase()
+
+        function contains (str, p) {
+          return pinyin(str, { style: 'first_letter' }).reduce((result, item) => result + item[0], '').includes(p)
+        }
+
+        return contains(name, tmp) || contains(manufacturer, tmp) || name.includes(tmp) || manufacturer.includes(tmp)
       })
       if (this.filteredItems.length <= ITEMS_PER_PAGE) {
         this.paginationProps = false
