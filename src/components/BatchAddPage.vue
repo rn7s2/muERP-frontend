@@ -14,7 +14,7 @@
             </template>
             <template #default>批次入库模板.csv</template>
           </a-button>
-          <a-upload accept=".csv" :limit="1" action="/api/batches" :style="{ marginLeft: '50px' }" />
+          <a-upload accept=".csv" :limit="1" action="/api/batches-from-xlsx" :style="{ marginLeft: '50px' }" />
         </a-space>
       </a-tab-pane>
       <a-tab-pane key="2" title="手动添加批次">
