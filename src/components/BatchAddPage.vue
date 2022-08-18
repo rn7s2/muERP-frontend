@@ -62,7 +62,7 @@ export default defineComponent({
   },
   methods: {
     downloadTemplate () {
-      window.open('批次入库模板.xlsx', '_blank')
+      window.location = '批次入库模板.xlsx'
     },
     refreshData () {
       ApiClient.getItems().then((res) => {
