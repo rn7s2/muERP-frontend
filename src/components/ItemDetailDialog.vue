@@ -27,7 +27,7 @@
           <a-input-number v-model="currentItem.price" :precision="2" />
         </a-form-item>
         <a-form-item field="expiration" label="最后一批保质期">
-          <a-input v-model="currentItem.expiration" />
+          <a-date-picker v-model="currentItem.expiration" />
         </a-form-item>
       </a-form>
     </div>
