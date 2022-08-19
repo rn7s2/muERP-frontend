@@ -27,7 +27,7 @@
           <a-input-number v-model="currentItem.price" :precision="2" />
         </a-form-item>
         <a-form-item field="expiration" label="最后一批保质期">
-          <a-input v-model="currentItem.expiration" disabled />
+          <a-input v-model="currentItem.expiration" />
         </a-form-item>
       </a-form>
     </div>
@@ -49,6 +49,10 @@ export default defineComponent({
   methods: {
     handleOk () {
       // modify item
+      if (this.currentItem.expiration === null || this.currentItem.expiration === undefined || this.currentItem.expiration === '') {
+        this.$message.warning('请输入保质期！')
+        return
+      }
       ApiClient.modifyItem(this.currentItem).then((res) => {
         this.$message.success('修改成功')
         this.$parent.closeItemDetailDialog()
